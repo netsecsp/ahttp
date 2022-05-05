@@ -1,0 +1,24 @@
+#ahttp server config file
+
+[globals]
+#全局发送限速, B/s
+max_sendspeed=-1
+
+[tcp]
+port=80
+
+[ssl]
+port=443
+cert=.\server.p12
+password=123456
+
+[session]
+#会话发送限速, B/s
+max_sendspeed=-1
+
+[website]
+#配置页面目录
+home=D:\workplat\src\appframe\doc
+
+#监控目录变化, 自动生成index.html
+active_detech_files_changed=1

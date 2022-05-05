@@ -1,0 +1,25 @@
+#aftpx client config file
+
+[proxy]
+#代理配置
+#none/http1.1/socks4.0 4.a 5.0
+protocol=http
+version=1.1
+host=127.0.0.1
+port=8080
+user=alex
+password=123456
+
+[session]
+#下载限速,B/s
+max_recvspeed=-1
+
+#传输模式: 0-主动 1-被动
+pasv=1
+
+#文件名字
+filename=
+
+[account]
+user=anonymous
+password=IEUser@
