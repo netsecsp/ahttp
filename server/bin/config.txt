@@ -18,7 +18,7 @@ max_sendspeed=-1
 
 [website]
 #配置页面目录
-home=D:\workplat\src\appframe\doc
+home=.\root
 
 #监控目录变化, 自动生成index.html
 active_detech_files_changed=1
