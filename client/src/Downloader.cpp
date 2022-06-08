@@ -136,7 +136,7 @@ HRESULT CDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoO
 
             STRING Status;
             STRING Params;
-            spRspmsg->Getline(&Status, &Params, 0);
+            spRspmsg->Getline(&Status, &Params, 0, 0 );
             std::string status = string_from_STRING(Status);
             std::string params = string_from_STRING(Params);
             lErrorCode = atoi(status.c_str());

@@ -157,7 +157,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
             STRING Method;
             STRING Params;
             STRING V;
-            spReqmsg->Getline(&Method, &Params, &V);
+            spReqmsg->Getline(&Method, &Params, &V, 0 );
             std::string method = string_from_STRING(Method);
             std::string params = string_from_STRING(Params);
             std::string v = string_from_STRING(V);
