@@ -176,7 +176,7 @@ HRESULT CDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoO
                 break;
             }
 
-            m_spInstanceManager->Verify(STRING_from_string(IN_AsynFileSystem));
+            m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
             CComPtr<IAsynFileSystem> spAsynFileSystem;
             HRESULT r1 = m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
             if( r1 != S_OK )

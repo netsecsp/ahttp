@@ -56,7 +56,7 @@ public:
         if( watch == 0 ) return true; //不要监控目录
         if( watch == 1 ) CreateFilelist("/"); //自动创建索引目录
 
-        lpInstancesManager->Verify(STRING_from_string(IN_AsynFileSystem));
+        lpInstancesManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
         CComPtr<IAsynFileSystem> spAsynFileSystem;
         lpInstancesManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
         if( spAsynFileSystem == NULL )

@@ -87,7 +87,7 @@ public: // interface of asyn_message_events_impl
 public:
     bool Start()
     {
-        m_spInstanceManager->Verify(STRING_from_string(IN_AsynFileSystem));
+        m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
         if( m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&m_spAsynFileSystem) != S_OK )
         {
             printf("can't load plugin: %s\n", IN_AsynFileSystem);
@@ -103,8 +103,6 @@ public:
 
         m_pWebsite.reset(new CWeb(m_spAsynFrameThread, m_setsfile.get_string("website", "home")));
         m_pWebsite->Start(m_spInstanceManager, m_setsfile.get_long("website", "active_detech_files_changed", 1));
-
-        SYSTEM_INFO si; ::GetSystemInfo(&si );
 
         if( m_setsfile.is_exist("ssl", "cert"))
         {// for ssl
@@ -122,6 +120,9 @@ public:
             }
         }
 
+        CComPtr<IThreadPool> threadpool;
+        m_spInstanceManager->NewInstance(0, 0, IID_IThreadPool, (void**)&threadpool);
+        
         PORT tcpport = m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
         {// check [tcp]
@@ -137,7 +138,7 @@ public:
             }
             spAsynPtlSocket->QueryInterface(IID_IAsynTcpSocketListener, (void**)&m_spAsynTcpSocketListener[0]);
 
-            HRESULT r0 = m_spAsynTcpSocketListener[0]->Set(DT_SetAsynFrameThread, si.dwNumberOfProcessors, 0); //设置接入线程池
+            HRESULT r0 = m_spAsynTcpSocketListener[0]->Set (DT_SetThreadpool, 0, threadpool); //设置接入线程池
 
             HRESULT r1 = m_spAsynTcpSocketListener[0]->Open(m_spAsynFrameThread, m_af, SOCK_STREAM, IPPROTO_TCP);
             HRESULT r2 = m_spAsynTcpSocketListener[0]->Bind(STRING_EX::null, tcpport, FALSE, NULL); //同步bind
@@ -172,7 +173,7 @@ public:
             }
             spAsynPtlSocket->QueryInterface(IID_IAsynTcpSocketListener, (void**)&m_spAsynTcpSocketListener[1]);
 
-            HRESULT r0 = m_spAsynTcpSocketListener[1]->Set(DT_SetAsynFrameThread, si.dwNumberOfProcessors, 0); //设置接入线程池
+            HRESULT r0 = m_spAsynTcpSocketListener[1]->Set (DT_SetThreadpool, 0, threadpool); //设置接入线程池
 
             HRESULT r1 = m_spAsynTcpSocketListener[1]->Open(m_spAsynFrameThread, m_af, SOCK_STREAM, IPPROTO_TCP);
             HRESULT r2 = m_spAsynTcpSocketListener[1]->Bind(STRING_EX::null, sslport, FALSE, NULL); //同步bind
@@ -192,7 +193,7 @@ public:
             {
                 continue;
             }
-            for(int n = 0; n < si.dwNumberOfProcessors; ++ n)
+            for(int c = 0; c < 2; ++ c)
             {
                 CComPtr<IAsynIoOperation> spAsynIoOperation;
                 m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, m_af, 0, IID_IAsynIoOperation, (void **)&spAsynIoOperation);
