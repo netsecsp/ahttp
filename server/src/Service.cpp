@@ -50,7 +50,10 @@ HRESULT CService::OnQueryResult( uint64_t lparam1, uint64_t lparam2, IKeyvalSett
     {// cert.get
         if( m_cert_p12.empty()) return S_FALSE;
         ISsl *pSsl = (ISsl *)lparam2;
-        pSsl->SetCryptContext(0, 0, &STRING_from_string(m_cert_p12), &STRING_from_string(m_password));
+        STRING certandpasswd[2];
+        certandpasswd[0] = STRING_from_string(m_cert_p12);
+        certandpasswd[1] = STRING_from_string(m_password);
+        pSsl->SetCryptContext(0, 0, certandpasswd);
         ppKeyval[0]->Set(STRING_from_string(";version"), 0, STRING_from_string(m_setsfile.get_string("ssl", "algo", "tls/1.0")));
         return S_OK;
     }
@@ -88,7 +91,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
             spAsynIoOperation->GetPeerAddress(&temp, 0, &port, 0);
             printf("accepted new client from %s:%d\n", host.c_str(), port);
 
-            char skey[64]; sprintf(skey, "%s:%d", host.c_str(), port);
+            char skey[64]; sprintf_s(skey, 64, "%s:%d", host.c_str(), port);
             userinfo &info = m_arId2Userinfos[skey];
             info.skey = skey;
 
@@ -209,7 +212,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
 
                 if( spReqmsg->Get(STRING_from_string("Range"), 0, 0, c.Clear()) != S_OK )
                 {
-                    _i64toa(filesize, out, 10);
+                    _i64toa_s(filesize, out, sizeof(out), 10);
                     params.Set(STRING_from_string("Content-Length"), 1, STRING_from_string(out));
 
                     info->spDataTcpSocket->SendPacket(STRING_from_string("200"), STRING_from_string("OK"), &params, 0);
@@ -244,10 +247,10 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
                     }
 
                     //Content-Range: bytes 5275648-15143085/15143086
-                    sprintf(out, "bytes %I64d-%I64d/%I64d", sendpos, sendend, filesize);
+                    sprintf_s(out, 128, "bytes %I64d-%I64d/%I64d", sendpos, sendend, filesize);
                     params.Set(STRING_from_string("Content-Range" ), 1, STRING_from_string(out));
 
-                    _i64toa(sendend + 1 - sendpos, out, 10);
+                    _i64toa_s(sendend + 1 - sendpos, out, sizeof(out), 10);
                     params.Set(STRING_from_string("Content-Length"), 1, STRING_from_string(out));
 
                     info->spDataTcpSocket->SendPacket(STRING_from_string("206"), STRING_from_string("Partial Content"), &params, 0);

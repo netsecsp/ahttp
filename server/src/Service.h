@@ -106,7 +106,7 @@ public:
 
         if( m_setsfile.is_exist("ssl", "cert"))
         {// for ssl
-            FILE *f = fopen(m_setsfile.get_string("ssl", "cert").c_str(), "rb");
+            FILE *f = 0; fopen_s(&f, m_setsfile.get_string("ssl", "cert").c_str(), "rb");
             if( f )
             {
                 BYTE temp[4096];
@@ -123,7 +123,7 @@ public:
         CComPtr<IThreadPool> threadpool;
         m_spInstanceManager->NewInstance(0, 0, IID_IThreadPool, (void**)&threadpool);
         
-        PORT tcpport = m_setsfile.get_long("tcp", "port", 80);
+        PORT tcpport = (PORT)m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
         {// check [tcp]
             CComPtr<IAsynTcpSocketListener> spAsynInnSocketListener;
@@ -152,7 +152,7 @@ public:
             printf("tcp.listen *:%-4d[%s]\n", tcpport, m_af == AF_INET? "ipv4" : "ipv6");
         }
 
-        PORT sslport = m_setsfile.get_long("ssl", "port");
+        PORT sslport = (PORT)m_setsfile.get_long("ssl", "port");
         if( sslport )
         {// check [ssl]
             if( m_cert_p12.empty())

@@ -164,7 +164,7 @@ bool CWeb::CreateFilelist(const std::string &name, bool bCheckSubtree)
         asynsdk::Convert(CP_ACP, file.c_str(), file.size(), CP_UTF8, file_utf8);
         if( data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
         {
-            sprintf(tr, "<tr onmouseOver=\"this.style.color='#0864ab';\" onmouseout=\"this.style.color='#464646';\">"
+            sprintf_s(tr, 2048, "<tr onmouseOver=\"this.style.color='#0864ab';\" onmouseout=\"this.style.color='#464646';\">"
                         "<td align='left' width=300><a href='%s/%s/index.html'>%s</a></td><td align='left' width=100>DIR</td><td width=4></td>"
                         "<td width=200></td>"
                         "</tr>", name_utf8 == "/" ? "" : name_utf8.c_str(), file_utf8.c_str(), file_utf8.c_str());
@@ -179,19 +179,19 @@ bool CWeb::CreateFilelist(const std::string &name, bool bCheckSubtree)
 
             char size[32];
             if( filesize.QuadPart >= 1024 * 1024 * 1000 )
-                sprintf(size, "%.2fGB", filesize.QuadPart / 1024.0 / 1024.0 / 1024.0);
+                sprintf_s(size, 32, "%.2fGB", filesize.QuadPart / 1024.0 / 1024.0 / 1024.0);
             else if( filesize.QuadPart >= 1024 * 1000 )
-                sprintf(size, "%.2fMB", filesize.QuadPart / 1024.0 / 1024.0);
+                sprintf_s(size, 32, "%.2fMB", filesize.QuadPart / 1024.0 / 1024.0);
             else if( filesize.QuadPart >= 1000 )
-                sprintf(size, "%.2fKB", filesize.LowPart / 1024.0);
+                sprintf_s(size, 32, "%.2fKB", filesize.LowPart / 1024.0);
             else
-                sprintf(size, "%dB", filesize.LowPart);
+                sprintf_s(size, 32, "%dB", filesize.LowPart);
 
             SYSTEMTIME st; FileTimeToSystemTime(&data.ftLastWriteTime, &st);
             char time[32];
-            sprintf(time, "%04d-%02d-%02d %02d:%02d:%02d", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+            sprintf_s(time, 32, "%04d-%02d-%02d %02d:%02d:%02d", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
-            sprintf(tr, "<tr onmouseOver=\"this.style.color='#0864ab';\" onmouseout=\"this.style.color='#464646';\">"
+            sprintf_s(tr, 2048, "<tr onmouseOver=\"this.style.color='#0864ab';\" onmouseout=\"this.style.color='#464646';\">"
                         "<td align='left' width=300><a href='%s/%s' title='file: %s'>%s</a></td><td align='right' width=100>%s</td><td width=4></td>"
                         "<td align='left' width=200>%s</td>"
                         "</tr>", name_utf8 == "/" ? "" : name_utf8.c_str(), file_utf8.c_str(), file_utf8.c_str(), file_utf8.c_str(), size, time);
@@ -202,7 +202,7 @@ bool CWeb::CreateFilelist(const std::string &name, bool bCheckSubtree)
 
     FindClose(handle);
 
-    FILE *fcb = fopen((m_filepath + (name == "/" ? ("/index.html") : (name + "/index.html"))).c_str(), "w");
+    FILE *fcb = 0; fopen_s(&fcb, (m_filepath + (name == "/" ? ("/index.html") : (name + "/index.html"))).c_str(), "w");
     if( fcb )
     {
         std::string path = "<a href='/index.html' title='/'><font color='#0864ab'>Home</font></a>";

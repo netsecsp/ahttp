@@ -106,7 +106,7 @@ HRESULT CDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoO
 
             if( m_startpos != 0 )
             {
-                char temp[64]; sprintf(temp, "bytes=%I64d-", m_startpos);
+                char temp[64]; sprintf_s(temp, 64, "bytes=%I64d-", m_startpos);
                 params.Set(STRING_from_string("Range"     ), 1, STRING_from_string(temp));
             }
 

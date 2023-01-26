@@ -41,7 +41,7 @@ HRESULT CTranfile::OnEventNotify( uint64_t lParam1, uint64_t lParam2, IAsynIoOpe
 {
     if( m_spAsynIoBridge != (IAsynIoBridge *)lParam1) return S_OK;
     
-    return asynsdk::PostAsynIoOperation(m_spAsynIoOperation, lParam2);
+    return asynsdk::PostAsynIoOperation(m_spAsynIoOperation, (uint32_t)lParam2);
 }
 
 HRESULT CTranfile::OnQueryResult( uint64_t lParam1, uint64_t lParam2, IUnknown **objects )

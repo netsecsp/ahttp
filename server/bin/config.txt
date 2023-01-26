@@ -1,7 +1,7 @@
 #ahttp server config file
-
+#############################
 [globals]
-#È«¾Ö·¢ËÍÏŞËÙ, B/s
+#å…¨å±€å‘é€é™é€Ÿ, B/s
 max_sendspeed=-1
 
 [tcp]
@@ -13,12 +13,12 @@ cert=.\server.p12
 password=123456
 
 [session]
-#»á»°·¢ËÍÏŞËÙ, B/s
+#ä¼šè¯å‘é€é™é€Ÿ, B/s
 max_sendspeed=-1
 
 [website]
-#ÅäÖÃÒ³ÃæÄ¿Â¼
-home=.\root
+#é…ç½®é¡µé¢ç›®å½•
+home=D:\workplat\src\appframe\doc
 
-#¼à¿ØÄ¿Â¼±ä»¯, ×Ô¶¯Éú³Éindex.html
+#ç›‘æ§ç›®å½•å˜åŒ–, è‡ªåŠ¨ç”Ÿæˆindex.html
 active_detech_files_changed=1

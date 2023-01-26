@@ -68,7 +68,7 @@ public:
         }
         std::string schema = url.substr(0, pos1);
         pos1 += 3/*skip "://" */;
-        strlwr((char *)schema.c_str());
+        _strlwr_s((char*)schema.c_str(), schema.size());
         if( schema != "http" && schema != "https" && schema != "ftp" && schema != "ftps" )
         {
             printf("invalid schema: %s\n", url.c_str());
@@ -169,7 +169,7 @@ public:
 
                 asynsdk::CKeyvalSetter    params(1);
                 params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.get_string("proxy", "user") + ":" + m_setsfile.get_string("proxy", "password")));
-                HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), schema!="https"? m_setsfile.get_long("proxy", "port", 8080) : m_setsfile.get_long("proxy", "port_2", 8443), STRING_EX::null, &params);
+                HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), schema!="https"? (PORT)m_setsfile.get_long("proxy", "port", 8080) : (PORT)m_setsfile.get_long("proxy", "port_2", 8443), STRING_EX::null, &params);
             }
             else
             {// socks.proxy
@@ -192,7 +192,7 @@ public:
 
                 asynsdk::CKeyvalSetter    params(1);
                 params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.get_string("proxy", "user") + ":" + m_setsfile.get_string("proxy", "password")));
-                HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), m_setsfile.get_long("proxy", "port", 1080), STRING_EX::null, &params);
+                HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), (PORT)m_setsfile.get_long("proxy", "port", 1080), STRING_EX::null, &params);
 
                 m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynTmpSocket.p, STRING_from_string(schema=="http"? "tcp/1.1" : "ssl/1.1"), &spAsynPtlSocket );
                 if( spAsynPtlSocket == NULL )

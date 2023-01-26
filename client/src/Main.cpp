@@ -55,7 +55,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 #pragma comment(lib,"asynframe_lib.lib")
 #endif
-STDAPI_(extern HRESULT) Initialize( /*[in ]*/IAsynMessageEvents* param1, /*[in ]*/IKeyvalSetter* param2 );
+STDAPI_(extern HRESULT) Initialize( /*[in ]*/IAsynMessageEvents *param1, /*[in ]*/IUnknown *param2 );
 STDAPI_(extern HRESULT) Destory();
 STDAPI_(extern InstancesManager *) GetInstancesManager();
 
@@ -107,7 +107,7 @@ int _tmain(int argc, _TCHAR *argv[])
 		if (pDownloader->Start(httpurl, _atoi64(pOffset)))
         {
             while( WAIT_OBJECT_0 != ::WaitForSingleObject(hNotify, 0) &&
-                   kbhit() == 0 )
+                   _kbhit() == 0 )
             {
                 Sleep(100); //0.1sec
             }
