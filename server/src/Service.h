@@ -87,12 +87,13 @@ public: // interface of asyn_message_events_impl
 public:
     bool Start()
     {
-        m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
-        if( m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&m_spAsynFileSystem) != S_OK )
+        if( m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
         {
             printf("can't load plugin: %s\n", IN_AsynFileSystem);
             return false;
         }
+
+        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&m_spAsynFileSystem);
 
         //设置全局发送速度: IAsynNetwork, B/s
         CComPtr<ISpeedController> spGlobalSpeedController;
@@ -106,7 +107,8 @@ public:
 
         if( m_setsfile.is_exist("ssl", "cert"))
         {// for ssl
-            FILE *f = 0; fopen_s(&f, m_setsfile.get_string("ssl", "cert").c_str(), "rb");
+            const std::string &file = m_setsfile.get_string("ssl", "cert");
+            FILE *f = 0; errno_t hr = fopen_s(&f, file.c_str(), "rb");
             if( f )
             {
                 BYTE temp[4096];
@@ -117,6 +119,10 @@ public:
                     m_cert_p12.assign((char*)temp, size);
                     m_password = m_setsfile.get_string("ssl", "password");
                 }
+            }
+            else
+            {
+                printf("open cert.p12[%s], error: %d\n", file.c_str(), (int)hr);
             }
         }
 
@@ -153,14 +159,9 @@ public:
         }
 
         PORT sslport = (PORT)m_setsfile.get_long("ssl", "port");
-        if( sslport )
+        if(!m_cert_p12.empty() &&
+            sslport )
         {// check [ssl]
-            if( m_cert_p12.empty())
-            {
-                printf("not find p12[cert]\n");
-                return false;
-            }
-
             CComPtr<IAsynTcpSocketListener> spAsynInnSocketListener;
             m_spAsynNetwork->CreateAsynTcpSocketListener(STRING_EX::null, &spAsynInnSocketListener);
 

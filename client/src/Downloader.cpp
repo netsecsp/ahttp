@@ -176,15 +176,15 @@ HRESULT CDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoO
                 break;
             }
 
-            m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
-            CComPtr<IAsynFileSystem> spAsynFileSystem;
-            HRESULT r1 = m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
-            if( r1 != S_OK )
+            if( m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
             {
                 printf("can't load plugin: %s\n", IN_AsynFileSystem);
                 SetEvent(m_hNotify);
                 break;
             }
+
+            CComPtr<IAsynFileSystem> spAsynFileSystem;
+            m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
 
             CComPtr<IAsynFile> spAsynFile;
             spAsynFileSystem->CreateAsynFile(&spAsynFile);

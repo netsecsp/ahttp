@@ -56,14 +56,14 @@ public:
         if( watch == 0 ) return true; //不要监控目录
         if( watch == 1 ) CreateFilelist("/"); //自动创建索引目录
 
-        lpInstancesManager->Require(STRING_from_string(IN_AsynFileSystem), 0);
-        CComPtr<IAsynFileSystem> spAsynFileSystem;
-        lpInstancesManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
-        if( spAsynFileSystem == NULL )
+        if( lpInstancesManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
         {
             printf("can't load plugin: %s\n", IN_AsynFileSystem);
             return false;
         }
+
+        CComPtr<IAsynFileSystem> spAsynFileSystem;
+        lpInstancesManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
 
         HRESULT r1 = spAsynFileSystem->CreateAsynFileWatcher(m_spAsynFrameThread, STRING_from_string(m_filepath), TRUE, FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME, &m_spAsynFileWatcher);
         if( r1 != S_OK )

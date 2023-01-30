@@ -9,7 +9,7 @@ port=80
 
 [ssl]
 port=443
-cert=.\server.p12
+cert=server.p12
 password=123456
 
 [session]
@@ -18,7 +18,7 @@ max_sendspeed=-1
 
 [website]
 #配置页面目录
-home=d:\www\web
+home=d:\\www\\web
 
 #监控目录变化, 自动生成index.html
 active_detech_files_changed=1
