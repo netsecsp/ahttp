@@ -127,7 +127,7 @@ public:
         }
 
         CComPtr<IThreadPool> threadpool;
-        m_spInstanceManager->NewInstance(0, 0, IID_IThreadPool, (void**)&threadpool);
+        m_spInstanceManager->NewInstance(0, 1, IID_IThreadPool, (void**)&threadpool);
         
         PORT tcpport = (PORT)m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
