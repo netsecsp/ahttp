@@ -85,6 +85,23 @@ public:
         return t;
     }
 
+    T   *AddRef()
+    {
+        if( p )
+        {
+            p->AddRef();
+        }
+        return p;
+    }
+    void Releae()
+    {
+        if( p )
+        {
+            p->Releae();
+            p = NULL;
+        }
+    }
+
     template<class C>
     C    Docast()
     {

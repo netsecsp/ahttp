@@ -33,6 +33,35 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Service.h"
 #include <frame/asm/ISsl.h>
 
+static const std::map<std::string, std::string> s_mapMimes = {
+        {".ts"  , "video/MP2T"                   },
+        {".flv" , "video/x-flv"                  },
+        {".m4v" , "video/x-m4v"                  },
+        {".3gpp", "video/3gpp"                   },
+        {".3gp" , "video/3gpp"                   },
+        {".mp4" , "video/mp4"                    },
+        {".aac" , "audio/x-aac"                  },
+        {".mp3" , "audio/mpeg"                   },
+        {".m4a" , "audio/x-m4a"                  },
+        {".ogg" , "audio/ogg"                    },
+        {".m3u8", "application/vnd.apple.mpegurl"}, // application/x-mpegURL
+        {".rss" , "application/rss+xml"          },
+        {".json", "application/json"             },
+        {".swf" , "application/x-shockwave-flash"},
+        {".doc" , "application/msword"           },
+        {".zip" , "application/zip"              },
+        {".rar" , "application/x-rar-compressed" },
+        {".xml" , "text/xml"                     },
+        {".html", "text/html"                    },
+        {".js"  , "text/javascript"              },
+        {".css" , "text/css"                     },
+        {".ico" , "image/x-icon"                 },
+        {".png" , "image/png"                    },
+        {".jpeg", "image/jpeg"                   },
+        {".jpg" , "image/jpeg"                   },
+        {".gif" , "image/gif"                    }
+};
+
 BEGIN_ASYN_MESSAGE_MAP(CService)
     ON_IOMSG_NOTIFY(OnIomsgNotify)
     ON_QUERY_RESULT(OnQueryResult, IKeyvalSetter)
@@ -200,8 +229,8 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
                     std::string::size_type ipos = filename.rfind('.');
                     if( std::string::npos != ipos )
                     {
-                        std::map<std::string, std::string>::iterator it = m_mapMimes.find(filename.substr(ipos));
-                        if( it != m_mapMimes.end()) params.Set(STRING_from_string("Content-type"), 1, STRING_from_string(it->second));
+                        std::map<std::string, std::string>::const_iterator it = s_mapMimes.find(filename.substr(ipos));
+                        if( it != s_mapMimes.end()) params.Set(STRING_from_string("Content-type"), 1, STRING_from_string(it->second));
                     }
 
                     uint64_t filesize; spAsynFile->GetFileSize(&filesize );

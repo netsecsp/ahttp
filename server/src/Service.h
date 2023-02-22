@@ -50,33 +50,6 @@ public:
         m_spAsynFrameThread = lpAsynFrameThread;
         m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (void **)&m_spAsynNetwork);
         CreateAsynFrame(m_spAsynFrameThread, 0, &m_spAsynFrame);
-
-        m_mapMimes[".ts"  ] = "video/MP2T";
-        m_mapMimes[".flv" ] = "video/x-flv";
-        m_mapMimes[".m4v" ] = "video/x-m4v";
-        m_mapMimes[".3gpp"] = "video/3gpp";
-        m_mapMimes[".3gp" ] = "video/3gpp";
-        m_mapMimes[".mp4" ] = "video/mp4";
-        m_mapMimes[".aac" ] = "audio/x-aac";
-        m_mapMimes[".mp3" ] = "audio/mpeg";
-        m_mapMimes[".m4a" ] = "audio/x-m4a";
-        m_mapMimes[".ogg" ] = "audio/ogg";
-        m_mapMimes[".m3u8"] = "application/vnd.apple.mpegurl"; // application/x-mpegURL
-        m_mapMimes[".rss" ] = "application/rss+xml";
-        m_mapMimes[".json"] = "application/json";
-        m_mapMimes[".swf" ] = "application/x-shockwave-flash";
-        m_mapMimes[".doc" ] = "application/msword";
-        m_mapMimes[".zip" ] = "application/zip";
-        m_mapMimes[".rar" ] = "application/x-rar-compressed" ;
-        m_mapMimes[".xml" ] = "text/xml";
-        m_mapMimes[".html"] = "text/html";
-        m_mapMimes[".js"  ] = "text/javascript";
-        m_mapMimes[".css" ] = "text/css";
-        m_mapMimes[".ico" ] = "image/x-icon";
-        m_mapMimes[".png" ] = "image/png";
-        m_mapMimes[".jpeg"] = "image/jpeg";
-        m_mapMimes[".jpg" ] = "image/jpeg";
-        m_mapMimes[".gif" ] = "image/gif";
     }
 
 public: // interface of asyn_message_events_impl
@@ -126,14 +99,13 @@ public:
             }
         }
 
-        CComPtr<IThreadPool> threadpool;
-        m_spInstanceManager->NewInstance(0, 1, IID_IThreadPool, (void**)&threadpool);
-        
+        CComPtr<IThreadPool> threadpool; threadpool.Attach(asynsdk::CreateThreadPool(m_spInstanceManager, "iosthreadpool?size=4", TP_FixedThreadpool));
+
         PORT tcpport = (PORT)m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
         {// check [tcp]
             CComPtr<IAsynTcpSocketListener> spAsynInnSocketListener;
-            m_spAsynNetwork->CreateAsynTcpSocketListener(STRING_EX::null, &spAsynInnSocketListener);
+            m_spAsynNetwork->CreateAsynTcpSocketListener(0, &spAsynInnSocketListener);
 
             CComPtr<IAsynRawSocket        > spAsynPtlSocket;
             m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynInnSocketListener.p, STRING_from_string("tcp/" + m_setsfile.get_string("globals", "version", "1.1")), &spAsynPtlSocket);
@@ -163,7 +135,7 @@ public:
             sslport )
         {// check [ssl]
             CComPtr<IAsynTcpSocketListener> spAsynInnSocketListener;
-            m_spAsynNetwork->CreateAsynTcpSocketListener(STRING_EX::null, &spAsynInnSocketListener);
+            m_spAsynNetwork->CreateAsynTcpSocketListener(0, &spAsynInnSocketListener);
 
             CComPtr<IAsynRawSocket        > spAsynPtlSocket;
             m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynInnSocketListener.p, STRING_from_string("ssl/" + m_setsfile.get_string("globals", "version", "1.1")), &spAsynPtlSocket);
@@ -228,7 +200,6 @@ protected:
     CComPtr<IAsynTcpSocketListener> m_spAsynTcpSocketListener[2];
     uint32_t m_af;
 
-    std::map<std::string, std::string> m_mapMimes;
     struct userinfo
     {
         CComPtr<ISpeedController > spSpeedController;

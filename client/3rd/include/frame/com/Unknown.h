@@ -38,8 +38,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ObjPtr.h"
-
 NAMESPACE_BEGIN(asynsdk)
 
 #define BEGIN_OBJ_MAP_EX(c, s)      template< class Q > operator Q*() { return static_cast<Q*>(this); } \
