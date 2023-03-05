@@ -251,7 +251,6 @@ HRESULT CDownloader::OnEventNotify( uint64_t lParam1, uint64_t lParam2, IAsynIoO
             printf("save %s on position: %I64d, error: %I64d\n", m_savename.c_str(), m_startpos, lParam2);
     }
 
-    m_spAsynIoBridge->Close(0); //close sock/file
     SetEvent(m_hNotify);
     return S_OK;
 }
