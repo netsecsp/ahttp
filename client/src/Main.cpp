@@ -59,17 +59,27 @@ STDAPI_(extern HRESULT) Initialize( /*[in ]*/IAsynMessageEvents *param1, /*[in ]
 STDAPI_(extern HRESULT) Destory();
 STDAPI_(extern InstancesManager *) GetInstancesManager();
 
+static void ShowUsage(const char *name)
+{
+    printf("usage: %s -4/6 url [offset]\n\texample: %s -4 http[s]://www.baidu.com/index.html\n\tplease check config.txt for proxy\n\n", name, name);
+}
+
 int _tmain(int argc, _TCHAR *argv[])
 {
     printf("Copyright (c) netsecsp 2012-2032, All rights reserved.\n");
     printf("Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated " STRING_UPDATETIME "\n");
     printf("http://ahttp.sf.net\n\n");
 
-    printf("usage: %s -4/6 url [offset]\n\texample: %s -4 http[s]://www.baidu.com/index.html\n\tplease check config.txt for proxy\n\n", argv[0], argv[0]);
-
     char *httpurl = "http://www.baidu.com/index.html", ipvx = '4', *pOffset = "0";
     for(int i = 1; i < argc; ++ i)
     {
+        if( strcmp(argv[i], "/?") == 0 || 
+            strcmp(argv[i], "--help") == 0 )
+        {
+            ShowUsage(argv[0]);
+            return 0;
+        }
+
         if( argv[i][0] == '-' )
         {
             ipvx = argv[i][1];
