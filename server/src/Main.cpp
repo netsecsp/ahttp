@@ -59,9 +59,16 @@ STDAPI_(extern HRESULT) Initialize( /*[in ]*/IAsynMessageEvents *param1, /*[in ]
 STDAPI_(extern HRESULT) Destory();
 STDAPI_(extern InstancesManager *) GetInstancesManager();
 
-static void ShowUsage(const char *name)
+static void ShowUsage(std::string name)
 {
-    printf("usage: %s -4/6\n\texample: %s -4\nplease check config.txt\n\n", name, name);
+    std::string::size_type i = name.find_last_of("/\\");
+    if( i != std::string::npos )
+        name.erase(0, i + 1);
+
+    printf("  Usage: %s [-4|6] configfile\n", name.c_str());
+    printf("Options:\n");
+    printf("      -4 Enforce IPv4\n");
+    printf("      -6 Enforce IPv6\n");
 }
 
 int _tmain(int argc, _TCHAR *argv[])
@@ -70,18 +77,49 @@ int _tmain(int argc, _TCHAR *argv[])
     printf("Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated " STRING_UPDATETIME "\n");
     printf("http://ahttp.sf.net\n\n");
 
-    char ipvx = '4';
+    char ipvx = AF_INET, *file = "config.txt";
     for(int i = 1; i < argc; ++ i)
     {
         if( strcmp(argv[i], "/?") == 0 || 
             strcmp(argv[i], "--help") == 0 )
         {
-            ShowUsage(argv[0]);
-            return 0;
+            file = 0;
+            break;
         }
-        if( argv[i][0] == '-' ) ipvx = argv[i][1];
+
+        if( argv[i][0] == '-' )
+        {
+            if( strcmp(argv[i], "-4") == 0 )
+            {
+                ipvx = AF_INET;
+                continue;
+            }
+            if( strcmp(argv[i], "-6") == 0 )
+            {
+                ipvx = 23;
+                continue;
+            }
+        }
+        else
+        {
+            file = argv[i];
+        }
     }
-    
+
+    if(!file )
+    {
+        ShowUsage(argv[0]);
+        return 0;
+    }
+
+    setting configure(file);
+
+    if( configure.m_sections.empty())
+    {
+        ShowUsage(argv[0]);
+        return 0;
+    }
+
     if( Initialize(NULL, NULL) != NO_ERROR )
     {
         printf("fail to Initialize asynframe\n");
@@ -99,14 +137,14 @@ int _tmain(int argc, _TCHAR *argv[])
         }
 
         CComPtr<IAsynFrameThread> spAsynFrameThread;
-        lpInstancesManager->NewInstance(0, 0, IID_IAsynFrameThread, (void **)&spAsynFrameThread);
+        lpInstancesManager->NewInstance(0, TC_Iocp, IID_IAsynFrameThread, (void **)&spAsynFrameThread);
 
-        std::unique_ptr<CService> pService(new CService(lpInstancesManager, spAsynFrameThread, ipvx == '4' ? 2 : 23));
+        std::unique_ptr<CService> pService(new CService(lpInstancesManager, configure, spAsynFrameThread, ipvx));
         if( pService->Start() )
         {
             while(!_kbhit())
             {
-                Sleep(100); //0.1sec
+                ::Sleep(100); //0.1sec
             }
         }
         pService->Shutdown();

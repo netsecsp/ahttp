@@ -43,8 +43,8 @@ using namespace asynsdk;
 class CService : public asyn_message_events_impl
 {
 public:
-    CService(InstancesManager *lpInstanceManager, IAsynFrameThread *lpAsynFrameThread, uint32_t af = AF_INET)
-        : m_af(af), m_setsfile("config.txt")
+    CService(InstancesManager *lpInstanceManager, setting &configure, IAsynFrameThread *lpAsynFrameThread, uint32_t af = AF_INET)
+        : m_af(af), m_setsfile(configure)
     {
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
@@ -99,7 +99,7 @@ public:
             }
         }
 
-        CComPtr<IThreadPool> threadpool; threadpool.Attach(asynsdk::CreateThreadPool(m_spInstanceManager, "iosthreadpool?size=4", TP_FixedThreadpool));
+        CComPtr<IThreadPool> threadpool; threadpool.Attach(asynsdk::CreateThreadPool(m_spInstanceManager, "iosthreadpool?t=1&size=4", PT_FixedThreadpool));
 
         PORT tcpport = (PORT)m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
@@ -191,7 +191,7 @@ protected:
     CComPtr<IAsynFrame      > m_spAsynFrame;
     CComPtr<IAsynNetwork    > m_spAsynNetwork;
     CComPtr<IAsynFileSystem > m_spAsynFileSystem;
-    setting                   m_setsfile;
+    setting                  &m_setsfile;
     std::unique_ptr<CWeb>     m_pWebsite;
 
     std::string m_cert_p12;

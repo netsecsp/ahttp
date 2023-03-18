@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define AAPIDLL_USING
 
-#include "Downloader.h"
+#include "http_Downloader.h"
 
 #ifdef AAPIDLL_USING
 #include <frame/asm/ITypedef_i.c>
@@ -59,40 +59,30 @@ STDAPI_(extern HRESULT) Initialize( /*[in ]*/IAsynMessageEvents *param1, /*[in ]
 STDAPI_(extern HRESULT) Destory();
 STDAPI_(extern InstancesManager *) GetInstancesManager();
 
-static void ShowUsage(const char *name)
+static void ShowUsage(std::string name)
 {
-    printf("usage: %s -4/6 url [offset]\n\texample: %s -4 http[s]://www.baidu.com/index.html\n\tplease check config.txt for proxy\n\n", name, name);
+    std::string::size_type i = name.find_last_of("/\\");
+    if( i != std::string::npos )
+        name.erase(0, i + 1);
+
+    printf("  Usage: %s [-4|6] [-s tls/1.0] [-referurl URL] [-u PROXYURL] [-c OFFSET] [-o FILE] http[s]://[user:password@]host[:port]/path/file\n", name.c_str());
+    printf("Options:\n");
+    printf("      -4 Enforce IPv4\n");
+    printf("      -6 Enforce IPv6\n");
+    printf("      -s use TLS or SSL\n");
+    printf("      -referurl use refer url\n");
+    printf("      -u use proxy url, protocol://[user:password@]host[:port]/ver?params\n");
+    printf("      -c continue-at OFFSET  Resumed transfer OFFSET\n");
+    printf("      -o save FILE\n");
+    printf("example: %s -4 \"http://localhost/test.exe\"\n", name.c_str());
 }
 
-int _tmain(int argc, _TCHAR *argv[])
+int main(int argc, const char *argv[])
 {
     printf("Copyright (c) netsecsp 2012-2032, All rights reserved.\n");
     printf("Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated " STRING_UPDATETIME "\n");
     printf("http://ahttp.sf.net\n\n");
 
-    char *httpurl = "http://www.baidu.com/index.html", ipvx = '4', *pOffset = "0";
-    for(int i = 1; i < argc; ++ i)
-    {
-        if( strcmp(argv[i], "/?") == 0 || 
-            strcmp(argv[i], "--help") == 0 )
-        {
-            ShowUsage(argv[0]);
-            return 0;
-        }
-
-        if( argv[i][0] == '-' )
-        {
-            ipvx = argv[i][1];
-        }
-        else
-        {
-            if( isdigit(argv[i][0]) )
-				pOffset = argv[i];
-            else
-				httpurl = argv[i];
-        }
-    }
-    
     if( Initialize(NULL, NULL) != NO_ERROR )
     {
         printf("fail to Initialize asynframe\n");
@@ -110,24 +100,29 @@ int _tmain(int argc, _TCHAR *argv[])
         }
 
         CComPtr<IAsynFrameThread> spAsynFrameThread;
-        lpInstancesManager->NewInstance(0, 0, IID_IAsynFrameThread, (void **)&spAsynFrameThread);
+        lpInstancesManager->NewInstance(0, TC_Iocp, IID_IAsynFrameThread, (void **)&spAsynFrameThread);
 
-        HANDLE hNotify =  ::CreateEvent(0, 1, 0, 0);
-        std::unique_ptr<CDownloader> pDownloader(new CDownloader(hNotify, lpInstancesManager, spAsynFrameThread, ipvx == '4'? 2 : 23));
-		if (pDownloader->Start(httpurl, _atoi64(pOffset)))
+        std::unique_ptr<CHttpDownloader> downloader(new CHttpDownloader(lpInstancesManager, spAsynFrameThread));
+        const char *httpurl = downloader->Parse(argc, argv);
+        if(!httpurl )
         {
-            while( WAIT_OBJECT_0 != ::WaitForSingleObject(hNotify, 0) &&
-                   _kbhit() == 0 )
+            ShowUsage(argv[0]);
+        }
+        else
+        {
+            if( downloader->Start(httpurl))
             {
-                Sleep(100); //0.1sec
+                while( WAIT_OBJECT_0 != ::WaitForSingleObject(downloader->m_hNotify, 0) &&
+                      _kbhit() == 0 )
+                {
+                    Sleep(100); //0.1sec
+                }
             }
         }
-        pDownloader->Shutdown();
+        downloader->Shutdown();
+    }while(0);
 
-        ::CloseHandle( hNotify);
-	}while(0);
-
-    if( Destory() != NO_ERROR )
+    if( Destory() != NO_ERROR)
     {
         printf("fail to Destory asynframe\n");
     }

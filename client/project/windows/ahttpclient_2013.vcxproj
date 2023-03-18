@@ -163,13 +163,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\Downloader.cpp" />
+    <ClCompile Include="..\..\src\http_Downloader.cpp" />
     <ClCompile Include="..\..\src\Main.cpp" />
     <ClCompile Include="..\..\src\setting.cpp" />
     <ClCompile Include="..\..\src\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\Downloader.h" />
+    <ClInclude Include="..\..\src\http_Downloader.h" />
     <ClInclude Include="..\..\src\setting.h" />
     <ClInclude Include="..\..\src\stdafx.h" />
   </ItemGroup>
