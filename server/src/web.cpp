@@ -165,7 +165,7 @@ bool CWeb::CreateFilelist(const std::string &name, bool bCheckSubtree)
         if( data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY )
         {
             sprintf_s(tr, 2048, "<tr onmouseOver=\"this.style.color='#0864ab';\" onmouseout=\"this.style.color='#464646';\">"
-                        "<td align='left' width=300><a href='%s/%s/index.html'>%s</a></td><td align='left' width=100>DIR</td><td width=4></td>"
+                        "<td align='left' width=300><a href='%s/%s/index.html'>%s</a></td><td align='left' width=100>&lt;DIR&gt;</td><td width=4></td>"
                         "<td width=200></td>"
                         "</tr>", name_utf8 == "/" ? "" : name_utf8.c_str(), file_utf8.c_str(), file_utf8.c_str());
             dirs += tr;

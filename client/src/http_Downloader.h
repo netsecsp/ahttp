@@ -42,7 +42,7 @@ class CHttpDownloader : public asyn_message_events_impl
 {
 public:
     CHttpDownloader(InstancesManager *lpInstanceManager, IAsynFrameThread *lpAsynFrameThread)
-      : m_setsfile("proxy.txt"), m_af(AF_INET), m_startpos(0), m_hNotify(::CreateEvent(0, 1, 0, 0))
+      : m_setsfile("proxy.txt"), m_af(AF_INET), m_startpos(0), m_referurl(0), m_hNotify(::CreateEvent(0, 1, 0, 0))
     {
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
