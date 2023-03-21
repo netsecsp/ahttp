@@ -42,7 +42,7 @@ class CHttpDownloader : public asyn_message_events_impl
 {
 public:
     CHttpDownloader(InstancesManager *lpInstanceManager, IAsynFrameThread *lpAsynFrameThread)
-      : m_setsfile("proxy.txt"), m_af(AF_INET), m_startpos(0), m_referurl(0), m_hNotify(::CreateEvent(0, 1, 0, 0))
+      : m_setsfile("proxy.txt"), m_af(AF_INET), m_startpos(0), m_referurl(0), m_nochkcert(true), m_hNotify(::CreateEvent(0, 1, 0, 0))
     {
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
@@ -81,7 +81,11 @@ public:
                         m_referurl = argv[i];
                     continue;
                 }
-
+                if( strcmp(argv[i], "-check-certificate") == 0 )
+                {
+                    m_nochkcert = false;
+                    continue;
+                }
                 if( strcmp(argv[i], "-4") == 0 )
                 {
                     m_af = AF_INET;
@@ -436,6 +440,7 @@ protected:
     CComPtr<ISpeedController> m_spSpeedController;
     uint32_t m_starttime;
     uint32_t m_af;
+    bool     m_nochkcert;
 
     CComPtr<IAsynIoBridge   > m_spAsynIoBridge;
     CComPtr<IAsynTcpSocket  > m_spAsynTcpSocket;

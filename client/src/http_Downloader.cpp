@@ -49,7 +49,7 @@ HRESULT CHttpDownloader::OnQueryResult( uint64_t lParam1, uint64_t lParam2, IUnk
         ((IKeyvalSetter*)objects[0])->Get(STRING_from_string(";context"), 0, 0, &c);
         if( d.m_val.rfind("cert.verify") != std::string::npos )
         {// cert.verify
-            return ((ISsl*)lParam2)->VerifyPeerCertificate(*(handle*)c.m_val.ptr, 0x1000);
+            return m_nochkcert? S_OK : ((ISsl*)lParam2)->VerifyPeerCertificate(*(handle*)c.m_val.ptr, 0x1000);
         }
         return E_NOTIMPL;
     }

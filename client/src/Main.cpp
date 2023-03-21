@@ -65,12 +65,13 @@ static void ShowUsage(std::string name)
     if( i != std::string::npos )
         name.erase(0, i + 1);
 
-    printf("  Usage: %s [-4|6] [-s tls/1.0] [-referurl URL] [-u PROXYURL] [-c OFFSET] [-o FILE] http[s]://[user:password@]host[:port]/path/file\n", name.c_str());
+    printf("  Usage: %s [-4|6] [-s tls/1.0] [-check-certificate] [-referurl URL] [-u PROXYURL] [-c OFFSET] [-o FILE] http[s]://[user:password@]host[:port]/path/file\n", name.c_str());
     printf("Options:\n");
     printf("      -4 Enforce IPv4\n");
     printf("      -6 Enforce IPv6\n");
-    printf("      -s use TLS or SSL\n");
     printf("      -referurl use refer url\n");
+    printf("      -s use TLS or SSL\n");
+    printf("      -check-certificate\n");
     printf("      -u use proxy url, protocol://[user:password@]host[:port]/ver?params\n");
     printf("      -c continue-at OFFSET  Resumed transfer OFFSET\n");
     printf("      -o save FILE\n");
