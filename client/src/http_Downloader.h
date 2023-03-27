@@ -332,7 +332,7 @@ public:
 
         CComPtr<IAsynRawSocket> spAsynPtlSocket;
         if( proxyname == "none" )
-        {// 没有配置代理的情况: non
+        {// 没有配置代理的情况: none
             m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("http"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(schema == "http" || schema == "ftp"? "tcp" : m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket);
             if( spAsynPtlSocket == NULL )
             {
@@ -344,14 +344,11 @@ public:
         {// 已经配置代理的情况: http/socks proxy
             if( proxyname == "http" )
             {// http.proxy
-                if( memcmp(schema.c_str(), "http", 4) == 0 )
-                {
-                    m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("proxy"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(   schema + "/" + m_setsfile.get_string("proxy", "version", "1.1")), &spAsynPtlSocket );
-                }
-                else
-                {
-                    m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("proxy"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(proxyname + "/" + m_setsfile.get_string("proxy", "version", "1.1")), &spAsynPtlSocket );
-                }
+                std::string version = m_setsfile.get_string("proxy", "version");
+                if(!version.empty())
+                    version.insert(0, "/");
+
+                m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("proxy"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(proxyname + version), &spAsynPtlSocket );
                 if( spAsynPtlSocket == NULL )
                 {
                     printf("can't load plugin: proxy.%s\n", proxyname.c_str());
@@ -374,9 +371,12 @@ public:
                     printf("invalid schema: %s\n", url.c_str());
                     return false;
                 }
+                std::string version = m_setsfile.get_string("proxy", "version");
+                if(!version.empty())
+                    version.insert(0, "/");
 
                 CComPtr<IAsynRawSocket> spAsynTmpSocket;
-                m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("proxy"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(proxyname + "/" + m_setsfile.get_string("proxy", "version", "5.0")), &spAsynTmpSocket );
+                m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("proxy"), (IUnknown **)&spAsynInnSocket.p, STRING_from_string(proxyname + version), &spAsynTmpSocket );
                 if( spAsynTmpSocket == NULL )
                 {
                     printf("can't load plugin: proxy.%s\n", proxyname.c_str());
@@ -390,7 +390,7 @@ public:
                 params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.get_string("proxy", "user") + ":" + m_setsfile.get_string("proxy", "password")));
                 HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), (PORT)m_setsfile.get_long("proxy", "port", 1080), STRING_from_string(m_setsfile.get_string("proxy", "method", "")), &params);
 
-                m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynTmpSocket.p, STRING_from_string(schema=="http"? "tcp/1.1" : m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket );
+                m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynTmpSocket.p, STRING_from_string(schema=="http"? "tcp" : m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket );
                 if( spAsynPtlSocket == NULL )
                 {
                     printf("can't load plugin: http\n");

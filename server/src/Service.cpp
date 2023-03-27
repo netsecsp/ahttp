@@ -106,7 +106,9 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
         {
             if( lErrorCode != NO_ERROR )
             {
+                #ifdef _DEBUG
                 printf("accept, error: %d\n", lErrorCode);
+                #endif
                 m_spAsynTcpSocketListener[lParam1? 1 : 0]->Accept(lpAsynIoOperation);
                 return S_OK;
             }

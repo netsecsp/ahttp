@@ -59,12 +59,14 @@ HRESULT CHttpDownloader::OnQueryResult( uint64_t lParam1, uint64_t lParam2, IUnk
     uint32_t bCompleted;
     ((IAsynIoOperation*)objects[0])->GetCompletedResult(0, 0, &bCompleted);
 
+    #ifdef _DEBUG
     if( m_datasize != _UI64_MAX ) m_datasize -= lParam2;
     if( m_datasize != _UI64_MAX )
         printf("transmit: %I64d/%I64d/%d\n", lParam2, m_datasize, bCompleted);
     else
         printf("transmit: %I64d/%d\n", lParam2, bCompleted);
-
+    #endif
+ 
     if( bCompleted ) m_datasize = 0; //mark download complete
 
     return m_datasize != 0? S_OK : S_FALSE;
@@ -97,7 +99,7 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
             }
 
             asynsdk::CKeyvalSetter params(1);
-          //params.Set(STRING_from_string("User-Agent"), 1, STRING_from_string("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"));
+            params.Set(STRING_from_string("User-Agent"), 1, STRING_from_string("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"));
             params.Set(STRING_from_string("Accept"    ), 1, STRING_from_string("*/*"));
 
             if( m_referurl ) params.Set(STRING_from_string("Referer"), 1, STRING_from_string(m_referurl));
