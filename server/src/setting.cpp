@@ -67,7 +67,10 @@ std::string setting::get_string(const std::string &section, const std::string &e
 
 void setting::set_string(const std::string &section, const std::string &entry, const std::string &value)
 {
-    m_key2vals[section + entry] = value;
+    if(!value.empty())
+    {
+        m_key2vals[section + entry] = value;
+    }
 }
 
 long setting::get_long(const std::string &section, const std::string &entry, long default_int )

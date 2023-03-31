@@ -95,11 +95,11 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
                 CComPtr<IAsynNetIoOperation> spAsynIoOperation;
                 lpAsynIoOperation->QueryInterface(IID_IAsynNetIoOperation, (void **)&spAsynIoOperation);
                 spAsynIoOperation->GetPeerAddress(&host, 0, &port, &m_af);
-                printf("connected %s:%d[%s]\n", host.m_val.c_str(), port, m_af == AF_INET ? "ipv4" : "ipv6");
+                printf("connected %s:%d[%s]\n", host.m_val.c_str(), port, m_af == AF_INET? "ipv4" : "ipv6");
             }
 
             asynsdk::CKeyvalSetter params(1);
-            params.Set(STRING_from_string("User-Agent"), 1, STRING_from_string("Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"));
+            params.Set(STRING_from_string("User-Agent"), 1, STRING_from_string("curl/7.84.0"));
             params.Set(STRING_from_string("Accept"    ), 1, STRING_from_string("*/*"));
 
             if( m_referurl ) params.Set(STRING_from_string("Referer"), 1, STRING_from_string(m_referurl));

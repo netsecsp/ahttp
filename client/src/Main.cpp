@@ -73,7 +73,7 @@ static void ShowUsage(std::string name)
     printf("      -s use TLS or SSL\n");
     printf("      -check-certificate\n");
     printf("      -u use proxy url, protocol://[user:password@]host[:port]/ver?params\n");
-    printf("      -c continue-at OFFSET  Resumed transfer OFFSET\n");
+    printf("      -c continue-at OFFSET Resumed transfer OFFSET\n");
     printf("      -o save FILE\n");
     printf("example: %s -4 \"http://localhost/test.exe\"\n", name.c_str());
 }
