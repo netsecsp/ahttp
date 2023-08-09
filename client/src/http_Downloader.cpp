@@ -44,12 +44,15 @@ HRESULT CHttpDownloader::OnQueryResult( uint64_t lParam1, uint64_t lParam2, IUnk
     if( lParam1 == EN_SystemEvent)
     {
         asynsdk::CStringSetter d(1);
-        asynsdk::CMemorySetter c((void*)0);
+        asynsdk::CMemorySetter c(1);
         ((IKeyvalSetter*)objects[0])->Get(STRING_from_string(";dattype"), 0, 0, &d);
         ((IKeyvalSetter*)objects[0])->Get(STRING_from_string(";context"), 0, 0, &c);
         if( d.m_val.rfind("cert.verify") != std::string::npos )
         {// cert.verify
-            return m_nochkcert? S_OK : ((ISsl*)lParam2)->VerifyPeerCertificate(*(handle*)c.m_val.ptr, 0x1000);
+            if( m_nochkcert )
+                return S_OK;
+            else
+                return c.m_val.ptr==0? S_FALSE : ((ISsl*)lParam2)->VerifyPeerCertificate(*(handle*)c.m_val.ptr, 0x1000);
         }
         return E_NOTIMPL;
     }
