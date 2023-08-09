@@ -69,7 +69,7 @@ END_ASYN_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 HRESULT CService::OnQueryResult( uint64_t lparam1, uint64_t lparam2, IKeyvalSetter **ppKeyval )
 {
-    if( lparam1 ) return E_NOTIMPL;
+    if( lparam1 != EN_SystemEvent ) return E_NOTIMPL;
  
     asynsdk::CStringSetter d(1);
     ppKeyval[0]->Get(STRING_from_string(";dattype"), 0, 0, &d);

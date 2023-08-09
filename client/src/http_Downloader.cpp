@@ -41,7 +41,7 @@ END_ASYN_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 HRESULT CHttpDownloader::OnQueryResult( uint64_t lParam1, uint64_t lParam2, IUnknown **objects )
 {
-    if(!lParam1 )
+    if( lParam1 == EN_SystemEvent)
     {
         asynsdk::CStringSetter d(1);
         asynsdk::CMemorySetter c((void*)0);

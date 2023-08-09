@@ -108,7 +108,7 @@ public:
             m_spAsynNetwork->CreateAsynTcpSocketListener(0, &spAsynInnSocketListener);
 
             CComPtr<IAsynRawSocket        > spAsynPtlSocket;
-            m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynInnSocketListener.p, STRING_from_string("tcp/" + m_setsfile.get_string("http", "version", "1.1")), &spAsynPtlSocket);
+            m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocketListener, 0, STRING_from_string("tcp/" + m_setsfile.get_string("http", "version", "1.1")), &spAsynPtlSocket);
             if( spAsynPtlSocket == NULL )
             {
                 printf("can't load plugin: http\n");
@@ -138,7 +138,7 @@ public:
             m_spAsynNetwork->CreateAsynTcpSocketListener(0, &spAsynInnSocketListener);
 
             CComPtr<IAsynRawSocket        > spAsynPtlSocket;
-            m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), (IUnknown **)&spAsynInnSocketListener.p, STRING_from_string(m_setsfile.get_string("http", "version", "1.1") + ":" + m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket);
+            m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocketListener, 0, STRING_from_string(m_setsfile.get_string("http", "version", "1.1") + ":" + m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket);
             if( spAsynPtlSocket == NULL )
             {
                 printf("can't load plugin: http\n");

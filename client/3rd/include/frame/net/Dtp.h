@@ -35,8 +35,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "AsynNetwork_internal.h"
-#include "asm/IDtp.h"
+#include "../AsynNetwork_internal.h"
+#include "../asm/IDtp.h"
 NAMESPACE_BEGIN(asynsdk)
 
 /////////////////////////////////////////////////////////////////////////////////
