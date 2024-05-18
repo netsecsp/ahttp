@@ -3,7 +3,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ public:
     {
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
-        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (void **)&m_spAsynNetwork);
+        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (IUnknown **)&m_spAsynNetwork);
         CreateAsynFrame(m_spAsynFrameThread, 0, &m_spAsynFrame);
     }
     virtual ~CHttpDownloader()
@@ -246,7 +246,7 @@ public:
 
     bool Start(std::string url)
     {// url格式， protocol://[user:password@]host[:port]/path/[;parameters][?query]#fragment
-        m_spInstanceManager->NewInstance(0, 0, IID_ISpeedController, (void **)&m_spSpeedController);
+        m_spInstanceManager->NewInstance(0, 0, IID_ISpeedController, (IUnknown **)&m_spSpeedController);
  
         std::string::size_type pos1 = url.find("://");
         if( pos1 == std::string::npos )
@@ -455,7 +455,7 @@ public:
                 printf("start to connect %s:%d via %s-proxyserver[%s]\n", m_host.c_str(), m_port, proxyname.c_str(), m_setsfile.get_string("proxy", "host", "127.0.0.1").c_str());
         }
 
-        CComPtr<IAsynNetIoOperation> spAsynIoOperation; m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, 0, 0, IID_IAsynNetIoOperation, (void **)&spAsynIoOperation);
+        CComPtr<IAsynNetIoOperation> spAsynIoOperation; m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, 0, 0, IID_IAsynNetIoOperation, (IUnknown **)&spAsynIoOperation);
         m_spAsynTcpSocket->Connect(STRING_from_string(m_host), m_port, 0, spAsynIoOperation, m_setsfile.get_long("session", "connect_timeout", 2000/*2sec*/));
         return true;
     }

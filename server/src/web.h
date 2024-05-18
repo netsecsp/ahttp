@@ -3,7 +3,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -63,7 +63,7 @@ public:
         }
 
         CComPtr<IAsynFileSystem> spAsynFileSystem;
-        lpInstancesManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
+        lpInstancesManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (IUnknown **)&spAsynFileSystem);
 
         HRESULT r1 = spAsynFileSystem->CreateAsynFileWatcher(m_spAsynFrameThread, STRING_from_string(m_filepath), TRUE, FILE_NOTIFY_CHANGE_SIZE | FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME, &m_spAsynFileWatcher);
         if( r1 != S_OK )

@@ -1,7 +1,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -129,7 +129,7 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
         else
         {// 成功收到 http 响应
             CComPtr<INetmsg> spRspmsg;
-            lpAsynIoOperation->GetCompletedObject(1, IID_INetmsg, (void **)&spRspmsg);
+            lpAsynIoOperation->GetCompletedObject(1, IID_INetmsg, (IUnknown**)&spRspmsg);
             if( spRspmsg == NULL )
             {
                 printf("recv, not found http ack\n");
@@ -187,7 +187,7 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
             }
 
             CComPtr<IAsynFileSystem> spAsynFileSystem;
-            m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&spAsynFileSystem);
+            m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (IUnknown **)&spAsynFileSystem);
 
             CComPtr<IAsynFile> spAsynFile;
             spAsynFileSystem->CreateAsynFile(&spAsynFile);
@@ -203,7 +203,7 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
             m_spAsynFrameThread->CreateAsynIoBridge( m_spAsynTcpSocket, spAsynFile, 0, &m_spAsynIoBridge );
             if( m_startpos )
             {
-                CComPtr<IAsynFileIoOperation> spAsynIoOperation; m_spAsynIoBridge->Get(BT_GetTargetIoOperation, 0, IID_IAsynFileIoOperation, (void **)&spAsynIoOperation);
+                CComPtr<IAsynFileIoOperation> spAsynIoOperation; m_spAsynIoBridge->Get(BT_GetTargetIoOperation, 0, IID_IAsynFileIoOperation, (IUnknown **)&spAsynIoOperation);
                 spAsynIoOperation->SetPosition(m_startpos); //设置开始写入数据时文件的偏移
             }
 
@@ -245,7 +245,7 @@ HRESULT CHttpDownloader::OnEventNotify( uint64_t lParam1, uint64_t lParam2, IAsy
     else
     {
         CComPtr<IAsynFileIoOperation> spAsynIoOperation;
-		m_spAsynIoBridge->Get(BT_GetTargetIoOperation, 0, IID_IAsynFileIoOperation, (void **)&spAsynIoOperation);
+		m_spAsynIoBridge->Get(BT_GetTargetIoOperation, 0, IID_IAsynFileIoOperation, (IUnknown**)&spAsynIoOperation);
         spAsynIoOperation->GetPosition(&m_startpos );
         lpAsynIoOperation->GetOpParams( 0, 0, &lParam1 );
         if( lParam1 == Io_recv )

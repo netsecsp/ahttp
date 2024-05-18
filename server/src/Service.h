@@ -3,7 +3,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ public:
     {
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
-        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (void **)&m_spAsynNetwork);
+        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (IUnknown **)&m_spAsynNetwork);
         CreateAsynFrame(m_spAsynFrameThread, 0, &m_spAsynFrame);
     }
 
@@ -66,13 +66,13 @@ public:
             return false;
         }
 
-        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (void **)&m_spAsynFileSystem);
+        m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynFileSystem), IID_IAsynFileSystem, (IUnknown **)&m_spAsynFileSystem);
 
         //设置全局发送速度: IAsynNetwork, B/s
         CComPtr<ISpeedController> spGlobalSpeedController;
         CComPtr<IObjectHolder   > spObjectHolder;
         m_spAsynNetwork->QueryInterface(IID_IObjectHolder, (void **)&spObjectHolder);
-        spObjectHolder->Get(Io_send, 0, IID_ISpeedController, (void **)&spGlobalSpeedController);
+        spObjectHolder->Get(Io_send, 0, IID_ISpeedController, (IUnknown **)&spGlobalSpeedController);
         spGlobalSpeedController->SetMaxSpeed(m_setsfile.get_long("globals", "max_sendspeed", -1));
 
         m_pWebsite.reset(new CWeb(m_spAsynFrameThread, m_setsfile.get_string("website", "home")));
@@ -99,7 +99,7 @@ public:
             }
         }
 
-        CComPtr<IThreadPool> threadpool; threadpool.Attach(asynsdk::CreateThreadPool(m_spInstanceManager, "iosthreadpool?t=1&size=4", PT_FixedThreadpool));
+        CComPtr<IThreadPool> threadpool; asynsdk::CreateObject(m_spInstanceManager, "iosthreadpool?t=1&size=4", 0, PT_FixedThreadpool, IID_IThreadPool, (IUnknown**)&threadpool);
 
         PORT tcpport = (PORT)m_setsfile.get_long("tcp", "port", 80);
         if( tcpport )
@@ -169,7 +169,7 @@ public:
             for(int c = 0; c < 2; ++ c)
             {
                 CComPtr<IAsynIoOperation> spAsynIoOperation;
-                m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, m_af, 0, IID_IAsynIoOperation, (void **)&spAsynIoOperation);
+                m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, m_af, 0, IID_IAsynIoOperation, (IUnknown **)&spAsynIoOperation);
                 spAsynIoOperation->SetOpParam1(i);
                 m_spAsynTcpSocketListener[i]->Accept(spAsynIoOperation);
             }

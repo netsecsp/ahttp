@@ -1,7 +1,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -127,11 +127,11 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
                 info.skey = skey;
 
                 //提取连接IAsynTcpSocket
-                lpAsynIoOperation->GetCompletedObject(TRUE, IID_INet, (void **)&info.spDataTcpSocket);
+                lpAsynIoOperation->GetCompletedObject(TRUE, IID_INet, (IUnknown **)&info.spDataTcpSocket);
                 m_spAsynTcpSocketListener[lParam1? 1 : 0]->Accept(lpAsynIoOperation);
 
                 //控制连接发送速度: B/s
-                m_spInstanceManager->NewInstance(0, 0, IID_ISpeedController, (void **)&info.spSpeedController);
+                m_spInstanceManager->NewInstance(0, 0, IID_ISpeedController, (IUnknown **)&info.spSpeedController);
                 info.spSpeedController->SetMaxSpeed(m_setsfile.get_long("session", "max_sendspeed", -1));
                 bool ret = asynsdk::SetSpeedController(info.spDataTcpSocket, Io_send, -1, info.spSpeedController);
 
@@ -186,7 +186,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
             {
                 //接收来自客户端的HTTP请求
                 CComPtr<INetmsg> spReqmsg;
-                lpAsynIoOperation->GetCompletedObject(1, IID_INetmsg, (void **)&spReqmsg);
+                lpAsynIoOperation->GetCompletedObject(1, IID_INetmsg, (IUnknown **)&spReqmsg);
 
                 STRING Method;
                 STRING Params;
@@ -291,7 +291,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
                     m_spAsynFrameThread->CreateAsynIoBridge(spAsynFile, info->spDataTcpSocket, 0, &spAsynIoBridge);
                     if( sendpos )
                     {
-                        CComPtr<IAsynFileIoOperation> spAsynIoOperation; spAsynIoBridge->Get(BT_GetSourceIoOperation, 0, IID_IAsynFileIoOperation, (void**)&spAsynIoOperation);
+                        CComPtr<IAsynFileIoOperation> spAsynIoOperation; spAsynIoBridge->Get(BT_GetSourceIoOperation, 0, IID_IAsynFileIoOperation, (IUnknown**)&spAsynIoOperation);
                         spAsynIoOperation->SetPosition(sendpos); //设置开始读取数据时文件的偏移
                     }
                     

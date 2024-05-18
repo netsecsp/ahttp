@@ -1,7 +1,7 @@
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
-Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 05/01/2022
+Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated 01/15/2024
 http://ahttp.sf.net
 
 Redistribution and use in source and binary forms, with or without
@@ -101,7 +101,7 @@ int main(int argc, const char *argv[])
         }
 
         CComPtr<IAsynFrameThread> spAsynFrameThread;
-        lpInstancesManager->NewInstance(0, TC_Iocp, IID_IAsynFrameThread, (void **)&spAsynFrameThread);
+        lpInstancesManager->NewInstance(0, TC_Iocp, IID_IAsynFrameThread, (IUnknown **)&spAsynFrameThread);
 
         std::unique_ptr<CHttpDownloader> downloader(new CHttpDownloader(lpInstancesManager, spAsynFrameThread));
         const char *httpurl = downloader->Parse(argc, argv);
