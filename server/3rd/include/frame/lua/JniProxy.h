@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
-#if !defined(AFX_UTILITY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_)
-#define AFX_UTILITY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_
+#if !defined(AFX_PROXY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_)
+#define AFX_PROXY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_
 /*****************************************************************************
 Copyright (c) netsecsp 2012-2032, All rights reserved.
 
@@ -52,12 +52,10 @@ extern "C" {
 NAMESPACE_BEGIN(lua)
 
 /////////////////////////////////////////////////////////////////////
-InstancesManager *GetInstancesManager( /*[in ]*/lua_State *pState );
-IScriptHost      *GetScriptHost( /*[in ]*/lua_State *pState );
-
-bool  Push( /*[in ]*/lua_State *pState, /*[in ]*/IUnknown* object ); //remark: 仅在栈顶生成对应lua对象, 不用时需要release才能释放c对象
+IScriptHost *GetScriptHost( /*[in ]*/lua_State *pState );
+bool Push( /*[in ]*/lua_State *pState, /*[in ]*/IUnknown* object ); //remark: 仅在栈顶生成对应lua对象, 不用时需要release才能释放c对象
 /////////////////////////////////////////////////////////////////////
 
 NAMESPACE_END(lua)
 
-#endif // !defined(AFX_UTILITY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_)
+#endif // !defined(AFX_PROXY_LUA_H__8A503072_4124_4233_9BEF_3671D8669695__INCLUDED_)
