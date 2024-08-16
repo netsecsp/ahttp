@@ -1,4 +1,4 @@
-> asynframe-sdk_v1.7.0-20240802.zip is from https://github.com/netsecsp/asynframe  
+> asynframe-sdk_v1.7.1-20240816.zip is from https://github.com/netsecsp/asynframe  
 
 # ahttp.exe  
 > supports IPv4/IPv6 http/https client program under windows  
