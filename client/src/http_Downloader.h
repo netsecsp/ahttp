@@ -35,15 +35,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <frame/AsynNetwork.h>
 #include <frame/asm/INet.h>
 #include <frame/asm/IProxy.h>
-#include "setting.h"
 using namespace asynsdk;
 
 class CHttpDownloader : public asyn_message_events_impl
 {
 public:
     CHttpDownloader(InstancesManager *lpInstanceManager, IAsynFrameThread *lpAsynFrameThread)
-      : m_setsfile("proxy.txt"), m_af(AF_INET), m_startpos(0), m_referurl(0), m_nochkcert(true), m_hNotify(::CreateEvent(0, 1, 0, 0))
+      : m_af(AF_INET), m_startpos(0), m_referurl(0), m_nochkcert(true), m_hNotify(::CreateEvent(0, 1, 0, 0))
     {
+        m_setsfile.from(lpInstanceManager);
         m_spInstanceManager = lpInstanceManager;
         m_spAsynFrameThread = lpAsynFrameThread;
         m_spInstanceManager->GetInstance(STRING_from_string(IN_AsynNetwork), IID_IAsynNetwork, (IUnknown **)&m_spAsynNetwork);
@@ -105,7 +105,7 @@ public:
                 if( strcmp(argv[i], "-s") == 0 )
                 {
                     if( argc > ++ i)
-                        m_setsfile.set_string("ssl", "algo", argv[i]);
+                        m_setsfile.setString("ssl.algo", argv[i]);
                     continue;
                 }
                 if( strcmp(argv[i], "-o") == 0 )
@@ -138,7 +138,7 @@ public:
                             pos1 += 3;
                         }
 
-                        m_setsfile.set_string("proxy", "protocol", schema);
+                        m_setsfile.setString("proxy.protocol", schema);
 
                         std::string::size_type pos2 = tmpurl.find('/', pos1);
                         std::string hostport; //[user:password@]host[:port]
@@ -155,7 +155,7 @@ public:
                             std::string::size_type post = tmpurl.find_first_of("?=", pos2);
                             if( post == std::string::npos )
                             {
-                                m_setsfile.set_string("proxy", "version", tmpurl.substr(pos2));
+                                m_setsfile.setString("proxy.version", tmpurl.substr(pos2));
                             }
                             else
                             {
@@ -167,7 +167,7 @@ public:
                                 else
                                 {
                                     params = tmpurl.substr(post + 1);
-                                    m_setsfile.set_string("proxy", "version", tmpurl.substr(pos2, post - pos2));
+                                    m_setsfile.setString("proxy.version", tmpurl.substr(pos2, post - pos2));
                                 }
 
                                 std::map<std::string, std::string> t;
@@ -189,8 +189,8 @@ public:
                                     s = i + 1; //skip '&'
                                 }while(1);
 
-                                m_setsfile.set_string("proxy", "method", t["method"]);
-                                m_setsfile.set_string("proxy", "ssl", t["ssl"]);
+                                m_setsfile.setString("proxy.method", t["method"]);
+                                m_setsfile.setString("proxy.ssl", t["ssl"]);
                             }
                         }
 
@@ -203,24 +203,24 @@ public:
                             std::string::size_type post = account.find(':');
                             if( post == std::string::npos )
                             {
-                                m_setsfile.set_string("proxy", "user", account);
+                                m_setsfile.setString("proxy.user", account);
                             }
                             else
                             {
-                                m_setsfile.set_string("proxy", "user", account.substr(0, post));
-                                m_setsfile.set_string("proxy", "password", account.substr(post + 1));
+                                m_setsfile.setString("proxy.user", account.substr(0, post));
+                                m_setsfile.setString("proxy.password", account.substr(post + 1));
                             }
                         }
 
                         std::string::size_type pos4 = hostport.find(':');
                         if( pos4 == std::string::npos )
                         {
-                            m_setsfile.set_string("proxy", "host", hostport);
+                            m_setsfile.setString("proxy.host", hostport);
                         }
                         else
                         {
-                            m_setsfile.set_string("proxy", "host", hostport.substr(0,  pos4));
-                            m_setsfile.set_string("proxy", "port", hostport.substr(pos4 + 1));
+                            m_setsfile.setString("proxy.host", hostport.substr(0,  pos4));
+                            m_setsfile.setString("proxy.port", hostport.substr(pos4 + 1));
                         }
                     }
                     continue;
@@ -307,7 +307,7 @@ public:
         if( m_savename.empty())
             m_savename = m_filename;
 
-        std::string proxyname = m_setsfile.get_string("proxy", "protocol", "none");
+        std::string proxyname = m_setsfile.getString("proxy.protocol", "none");
         if( proxyname != "none" &&
             proxyname != "http" &&
             proxyname != "socks" )
@@ -329,7 +329,7 @@ public:
                 return false;
             }
 
-            m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(schema == "http"? "tcp" : m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket);
+            m_spAsynNetwork->CreateAsynPtlSocket( STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(schema == "http"? "tcp" : m_setsfile.getString("ssl.algo", "tls/1.0")), &spAsynPtlSocket);
             if( spAsynPtlSocket == NULL )
             {
                 printf("can't load plugin: http\n");
@@ -341,11 +341,11 @@ public:
             if( proxyname == "http" )
             {// http.proxy
                 {
-                    std::string ver = m_setsfile.get_string("proxy", "version");
+                    std::string ver = m_setsfile.getString("proxy.version");
                     if(!ver.empty())
                         ver.insert(0, "/");
 
-                    std::string ssl = m_setsfile.get_string("proxy", "ssl");
+                    std::string ssl = m_setsfile.getString("proxy.ssl");
                     if(!ssl.empty())
                         ssl.insert(0, ":");
 
@@ -365,8 +365,8 @@ public:
                     spAsynInnSocket->QueryInterface(IID_IAsynProxySocket, (void **)&spProxy);
 
                     asynsdk::CKeyvalSetter    params(1);
-                    params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.get_string("proxy", "user") + ":" + m_setsfile.get_string("proxy", "password")));
-                    HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), (PORT)m_setsfile.get_long("proxy", "port", ssl.empty()? 8080 : 8443), STRING_from_string(m_setsfile.get_string("proxy", "method", "")), &params);
+                    params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.getString("proxy.user") + ":" + m_setsfile.getString("proxy.password")));
+                    HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.getString("proxy.host", "127.0.0.1")), (PORT)m_setsfile.getNumber("proxy.port", ssl.empty()? 8080 : 8443), STRING_from_string(m_setsfile.getString("proxy.method", "")), &params);
                 }
 
                 if( schema != "http" &&
@@ -380,7 +380,7 @@ public:
                     CComPtr<IHttpTxTunnel> spDataTxTunnel; spAsynInnSocket->QueryInterface(IID_IHttpTxTunnel, (void **)&spDataTxTunnel);
                     spDataTxTunnel->SetEnabled(1); //强制直接代理
 
-                    m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket );
+                    m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(m_setsfile.getString("ssl.algo", "tls/1.0")), &spAsynPtlSocket );
                     if( spAsynPtlSocket == NULL )
                     {
                         printf("can't load plugin: http\n");
@@ -402,7 +402,7 @@ public:
                 }
 
                 {
-                    std::string ver = m_setsfile.get_string("proxy", "version");
+                    std::string ver = m_setsfile.getString("proxy.version");
                     if(!ver.empty())
                         ver.insert(0, "/");
 
@@ -422,11 +422,11 @@ public:
                     spAsynTmpSocket->QueryInterface(IID_IAsynProxySocket, (void **)&spProxy);
 
                     asynsdk::CKeyvalSetter    params(1);
-                    params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.get_string("proxy", "user") + ":" + m_setsfile.get_string("proxy", "password")));
-                    HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.get_string("proxy", "host", "127.0.0.1")), (PORT)m_setsfile.get_long("proxy", "port", 1080), STRING_from_string(m_setsfile.get_string("proxy", "method", "")), &params);
+                    params.Set(STRING_from_string(";account"), 1, STRING_from_string(m_setsfile.getString("proxy.user") + ":" + m_setsfile.getString("proxy.password")));
+                    HRESULT hr = spProxy->SetProxyContext(STRING_from_string(m_setsfile.getString("proxy.host", "127.0.0.1")), (PORT)m_setsfile.getNumber("proxy.port", 1080), STRING_from_string(m_setsfile.getString("proxy.method", "")), &params);
                 }
 
-                m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(schema=="http"? "tcp" : m_setsfile.get_string("ssl", "algo", "tls/1.0")), &spAsynPtlSocket );
+                m_spAsynNetwork->CreateAsynPtlSocket(STRING_from_string("http"), spAsynInnSocket, 0, STRING_from_string(schema=="http"? "tcp" : m_setsfile.getString("ssl.algo", "tls/1.0")), &spAsynPtlSocket );
                 if( spAsynPtlSocket == NULL )
                 {
                     printf("can't load plugin: http\n");
@@ -448,15 +448,15 @@ public:
         }
         else
         {
-            const PORT port = (PORT)m_setsfile.get_long("proxy", "port", 0);
+            const PORT port = (PORT)m_setsfile.getNumber("proxy.port", 0);
             if( port )
-                printf("start to connect %s:%d via %s-proxyserver[%s:%d]\n", m_host.c_str(), m_port, proxyname.c_str(), m_setsfile.get_string("proxy", "host", "127.0.0.1").c_str(), port);
+                printf("start to connect %s:%d via %s-proxyserver[%s:%d]\n", m_host.c_str(), m_port, proxyname.c_str(), m_setsfile.getString("proxy.host", "127.0.0.1").c_str(), port);
             else
-                printf("start to connect %s:%d via %s-proxyserver[%s]\n", m_host.c_str(), m_port, proxyname.c_str(), m_setsfile.get_string("proxy", "host", "127.0.0.1").c_str());
+                printf("start to connect %s:%d via %s-proxyserver[%s]\n", m_host.c_str(), m_port, proxyname.c_str(), m_setsfile.getString("proxy.host", "127.0.0.1").c_str());
         }
 
         CComPtr<IAsynNetIoOperation> spAsynIoOperation; m_spAsynNetwork->CreateAsynIoOperation(m_spAsynFrame, 0, 0, IID_IAsynNetIoOperation, (IUnknown **)&spAsynIoOperation);
-        m_spAsynTcpSocket->Connect(STRING_from_string(m_host), m_port, 0, spAsynIoOperation, m_setsfile.get_long("session", "connect_timeout", 2000/*2sec*/));
+        m_spAsynTcpSocket->Connect(STRING_from_string(m_host), m_port, 0, spAsynIoOperation, m_setsfile.getNumber("session.connect_timeout", 2000/*2sec*/));
         return true;
     }
 
@@ -483,8 +483,9 @@ protected:
     std::string   m_host;
     PORT          m_port;
 
+    asynsdk::CSetting m_setsfile;
+
     const char   *m_referurl;
-    setting       m_setsfile;
     std::string   m_filename;
     std::string   m_filepath;
     std::string   m_savename;

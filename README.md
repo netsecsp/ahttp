@@ -1,12 +1,12 @@
-> asynframe-sdk_v1.7.1-20240816.zip is from https://github.com/netsecsp/asynframe  
+> asynframe-sdk_v1.8.0-20241111.zip is from https://github.com/netsecsp/asynframe  
 
-# ahttp.exe  
-> supports IPv4/IPv6 http/https client program under windows  
+# ahttp  
+> supports IPv4/IPv6 http/https client programs  
 
 1. support ftp/http and socks4/4a/5 proxy  
 2. support download from offset  
 
-# ahttpserver.exe
-> supports IPv4/IPv6 http/https server program under windows  
+# ahttpserver
+> supports IPv4/IPv6 http/https server program  
 
 1. support browse files via ie, automatic monitor file/directory change  

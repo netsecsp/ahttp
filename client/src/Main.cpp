@@ -84,7 +84,8 @@ int main(int argc, const char *argv[])
     printf("Developer: Shengqian Yang, from China, E-mail: netsecsp@hotmail.com, last updated " STRING_UPDATETIME "\n");
     printf("http://ahttp.sf.net\n\n");
 
-    if( Initialize(NULL, NULL) != NO_ERROR )
+    asynsdk::CStringSetter fileconf(1, "proxy.txt");
+    if( Initialize(NULL,&fileconf) != NO_ERROR )
     {
         printf("fail to Initialize asynframe\n");
         return 0;

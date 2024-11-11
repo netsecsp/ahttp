@@ -83,7 +83,7 @@ HRESULT CService::OnQueryResult( uint64_t lparam1, uint64_t lparam2, IKeyvalSett
         certandpasswd[0] = STRING_from_string(m_cert_p12);
         certandpasswd[1] = STRING_from_string(m_password);
         pSsl->SetCryptContext(0, 0, certandpasswd);
-        ppKeyval[0]->Set(STRING_from_string(";version"), 0, STRING_from_string(m_setsfile.get_string("ssl", "algo", "tls/1.0")));
+        ppKeyval[0]->Set(STRING_from_string(";version"), 0, STRING_from_string(m_setsfile.getString("ssl.algo", "tls/1.0")));
         return S_OK;
     }
 
@@ -132,7 +132,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
 
                 //控制连接发送速度: B/s
                 m_spInstanceManager->NewInstance(0, 0, IID_ISpeedController, (IUnknown **)&info.spSpeedController);
-                info.spSpeedController->SetMaxSpeed(m_setsfile.get_long("session", "max_sendspeed", -1));
+                info.spSpeedController->SetMaxSpeed(m_setsfile.getNumber("session.max_sendspeed", -1));
                 bool ret = asynsdk::SetSpeedController(info.spDataTcpSocket, Io_send, -1, info.spSpeedController);
 
                 CComPtr<IAsynIoOperation> spRecvIoOperation;
@@ -207,7 +207,7 @@ HRESULT CService::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsynIoOper
                 if( params == "/" ||
                     params.empty() ) params = "/index.html";
 
-                const std::string &filename = m_setsfile.get_string("website", "home") + params;
+                const std::string &filename = m_setsfile.getString("website.home") + params;
                 asynsdk::CStringSetter    c(1);
                 spReqmsg->Get(STRING_from_string("Connection"), 0, 0, c.Clear());
                 lpAsynIoOperation->SetOpParams(AF_IOMSG_NOTIFY, 0, Io_send); //设置传输完成通知事件
