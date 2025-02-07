@@ -60,7 +60,7 @@ public: // interface of asyn_message_events_impl
 public:
     bool Start()
     {
-        if( m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
+        if( CHECK_NO(m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0)))
         {
             printf("can't load plugin: %s\n", IN_AsynFileSystem);
             return false;

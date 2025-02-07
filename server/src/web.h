@@ -56,7 +56,7 @@ public:
         if( watch == 0 ) return true; //不要监控目录
         if( watch == 1 ) CreateFilelist("/"); //自动创建索引目录
 
-        if( lpInstancesManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
+        if( CHECK_NO(lpInstancesManager->Require(STRING_from_string(IN_AsynFileSystem), 0)))
         {
             printf("can't load plugin: %s\n", IN_AsynFileSystem);
             return false;

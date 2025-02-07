@@ -179,7 +179,7 @@ HRESULT CHttpDownloader::OnIomsgNotify( uint64_t lParam1, uint64_t lAction, IAsy
                 break;
             }
 
-            if( m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem)) != S_OK )
+            if( CHECK_NO(m_spInstanceManager->Require(STRING_from_string(IN_AsynFileSystem), 0)))
             {
                 printf("can't load plugin: %s\n", IN_AsynFileSystem);
                 SetEvent(m_hNotify);
